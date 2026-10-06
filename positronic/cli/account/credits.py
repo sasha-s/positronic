@@ -1,6 +1,6 @@
 import configuronic as cfn
 from platform_client.ids import OrgSlug, PackageId, PurchaseId, TransactionKey
-from platform_client.requests import BillingAccountQuery, BillingPurchaseCreateRequest, BillingPurchaseGetQuery
+from platform_client.requests import BillingOrgQuery, BillingPurchaseCreateRequest, BillingPurchaseGetQuery
 
 from positronic.cli.account.gateway import gateway, refusing_bad_input
 
@@ -15,7 +15,7 @@ def _text(token: object, field: str) -> str:
 def account(org: object, platform_url: str | None = None):
     """Print exact credit units, configured tariff rates, and purchase packages."""
     with refusing_bad_input():
-        query = BillingAccountQuery(org=OrgSlug(_text(org, 'org')))
+        query = BillingOrgQuery(org=OrgSlug(_text(org, 'org')))
     with gateway(platform_url) as client:
         result = client.billing_account(query.org)
     print(result.model_dump_json(indent=2))
@@ -49,7 +49,7 @@ def purchase(id: object, platform_url: str | None = None):
 def purchases(org: object, platform_url: str | None = None):
     """Print the purchase history of one organization this account belongs to."""
     with refusing_bad_input():
-        query = BillingAccountQuery(org=OrgSlug(_text(org, 'org')))
+        query = BillingOrgQuery(org=OrgSlug(_text(org, 'org')))
     with gateway(platform_url) as client:
         result = client.list_purchases(query.org)
     print(result.model_dump_json(indent=2))

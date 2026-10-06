@@ -72,7 +72,7 @@ class SubmissionListQuery(BaseModel):
     limit: int | None = Field(default=None, gt=0)
 
 
-class BillingAccountQuery(BaseModel):
+class BillingOrgQuery(BaseModel):
     model_config = INPUT_MODEL_CONFIG
 
     org: OrgSlug = Field(min_length=1)

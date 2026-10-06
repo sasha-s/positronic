@@ -55,7 +55,7 @@ from platform_client.ids import ApiKey, OrgSlug, PackageId, PurchaseId, Submissi
 from platform_client.model_config import INPUT_MODEL_CONFIG
 from platform_client.policy_images import PolicyImage
 from platform_client.requests import (
-    BillingAccountQuery,
+    BillingOrgQuery,
     BillingPurchaseCreateRequest,
     BillingPurchaseGetQuery,
     CancelRequest,
@@ -987,7 +987,7 @@ def test_a_reviewed_or_credited_purchase_cannot_publish_a_payable_link(lifecycle
 
 def test_billing_queries_and_create_request_share_the_input_boundary():
     models = (
-        BillingAccountQuery(org=OrgSlug('acme')),
+        BillingOrgQuery(org=OrgSlug('acme')),
         BillingPurchaseGetQuery(id=PurchaseId('opaque-purchase-id')),
         BillingPurchaseCreateRequest(
             org=OrgSlug('acme'), package_id=PackageId('package'), transaction_key=TransactionKey('retry-key')
@@ -1029,5 +1029,8 @@ def test_billing_modes_require_the_matching_hold_state():
         RequestBilling(mode=BillingMode.prepaid, state=BillingState.held)
     with pytest.raises(ValidationError, match='holds no credits'):
         RequestBilling(mode=BillingMode.legacy, state=BillingState.held)
+
+
+def test_a_credit_balance_refuses_reserved_credits_above_posted_credits():
     with pytest.raises(ValidationError, match='exceed'):
         CreditBalance(posted_units=10, reserved_units=11)

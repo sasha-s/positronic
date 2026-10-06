@@ -26,7 +26,7 @@ from platform_client.errors import PlatformError
 from platform_client.eval_plan import REVEAL_REGISTRY_PASSWORD, EvalPlan
 from platform_client.ids import ApiKey, OrgSlug, PurchaseId, SubmissionId
 from platform_client.requests import (
-    BillingAccountQuery,
+    BillingOrgQuery,
     BillingPurchaseCreateRequest,
     BillingPurchaseGetQuery,
     CancelRequest,
@@ -169,7 +169,7 @@ class PlatformClient:
         return self._get(routes.USERS_ME, MeResponse)
 
     def billing_account(self, org: OrgSlug) -> BillingAccount:
-        return self._get(routes.BILLING_ACCOUNT, BillingAccount, query=BillingAccountQuery(org=org))
+        return self._get(routes.BILLING_ACCOUNT, BillingAccount, query=BillingOrgQuery(org=org))
 
     def create_purchase(self, request: BillingPurchaseCreateRequest) -> PurchaseView:
         return self._post(routes.BILLING_PURCHASES_CREATE, request, PurchaseView)
@@ -178,7 +178,7 @@ class PlatformClient:
         return self._get(routes.BILLING_PURCHASES_GET, PurchaseView, query=BillingPurchaseGetQuery(id=purchase_id))
 
     def list_purchases(self, org: OrgSlug) -> PurchaseListResponse:
-        return self._get(routes.BILLING_PURCHASES_LIST, PurchaseListResponse, query=BillingAccountQuery(org=org))
+        return self._get(routes.BILLING_PURCHASES_LIST, PurchaseListResponse, query=BillingOrgQuery(org=org))
 
     def create_submission(self, plan: EvalPlan) -> SubmissionCreateResponse:
         """Run one plan. A plan that states its own tasks needs a customer grant: a key without one
