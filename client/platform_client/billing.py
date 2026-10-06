@@ -10,8 +10,8 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, computed_field
 
 CREDIT_SCALE = 60_000_000_000
 NANOSECONDS_PER_MINUTE = 60_000_000_000
-MAX_UNITS = (1 << 63) - 1
-CreditUnits = Annotated[int, Field(strict=True, ge=0, le=MAX_UNITS)]
+INT64_MAX = (1 << 63) - 1
+CreditUnits = Annotated[int, Field(strict=True, ge=0, le=INT64_MAX)]
 
 
 class Tariff(BaseModel):
@@ -43,10 +43,10 @@ class Tariff(BaseModel):
 class QuoteLine(BaseModel):
     model_config = ConfigDict(extra='forbid', frozen=True)
 
-    task_pos: int = Field(strict=True, ge=0, le=MAX_UNITS)
+    task_pos: int = Field(strict=True, ge=0, le=INT64_MAX)
     endpoint: str = Field(min_length=1)
-    count: int = Field(strict=True, ge=1, le=MAX_UNITS)
-    cap_ns: int = Field(strict=True, ge=1, le=MAX_UNITS)
+    count: int = Field(strict=True, ge=1, le=INT64_MAX)
+    cap_ns: int = Field(strict=True, ge=1, le=INT64_MAX)
     max_units: CreditUnits
 
 
@@ -110,7 +110,7 @@ class CreditPackage(BaseModel):
 
     id: PackageId = Field(min_length=1)
     credit_units: CreditUnits = Field(gt=0)
-    amount_minor: int = Field(strict=True, gt=0, le=MAX_UNITS)
+    amount_minor: int = Field(strict=True, gt=0, le=INT64_MAX)
     currency: str = Field(pattern=r'^[a-z]{3}$')
 
 

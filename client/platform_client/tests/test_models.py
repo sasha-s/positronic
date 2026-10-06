@@ -9,7 +9,7 @@ import pytest
 from platform_client import config, eval_plan, requests
 from platform_client.billing import (
     CREDIT_SCALE,
-    MAX_UNITS,
+    INT64_MAX,
     BillingAccount,
     CreditBalance,
     CreditPackage,
@@ -964,7 +964,7 @@ def test_billing_account_and_purchase_keep_exact_package_and_member_identity():
 
 
 @pytest.mark.parametrize('field', ['credit_units', 'amount_minor'])
-@pytest.mark.parametrize('value', [0, -1, 1.5, True, MAX_UNITS + 1])
+@pytest.mark.parametrize('value', [0, -1, 1.5, True, INT64_MAX + 1])
 def test_purchase_package_refuses_inexact_or_unbounded_credits_and_money(field, value):
     data = {'id': 'operator-package', 'credit_units': CREDIT_SCALE, 'amount_minor': 17, 'currency': 'jpy'}
     data[field] = value
@@ -1013,7 +1013,7 @@ def test_billing_terms_reject_wrong_versions_and_inconsistent_quotes():
         CreditQuote(terms=Tariff.for_rates(0, 0), lines=(line,), total_units=line.max_units)
 
 
-@pytest.mark.parametrize('units', [True, 1.0, '1', -1, MAX_UNITS + 1])
+@pytest.mark.parametrize('units', [True, 1.0, '1', -1, INT64_MAX + 1])
 def test_billing_units_reject_coercion_and_overflow(units):
     with pytest.raises(ValidationError):
         Tariff.for_rates(units, 0)
@@ -1021,7 +1021,7 @@ def test_billing_units_reject_coercion_and_overflow(units):
 
 def test_billing_task_positions_reject_storage_overflow():
     with pytest.raises(ValidationError, match='task_pos'):
-        QuoteLine(task_pos=MAX_UNITS + 1, endpoint='candidate', count=1, cap_ns=1, max_units=0)
+        QuoteLine(task_pos=INT64_MAX + 1, endpoint='candidate', count=1, cap_ns=1, max_units=0)
 
 
 def test_billing_modes_require_the_matching_hold_state():
