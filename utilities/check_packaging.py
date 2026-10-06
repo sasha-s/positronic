@@ -16,6 +16,7 @@ for module_name, source_dir in (
     ('platform_client', root / 'client' / 'platform_client'),
     ('positronic_wire', root / 'wire' / 'positronic_wire'),
     ('positronic_model_server', root / 'model_server' / 'positronic_model_server'),
+    ('eval_vocabulary', root / 'vocabulary' / 'eval_vocabulary'),
 ):
     module = importlib.import_module(module_name)
     for module_path in module.__path__:

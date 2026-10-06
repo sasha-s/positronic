@@ -201,8 +201,9 @@ the plan lays out that scene and that table, and runs the episodes in that order
 names each task and what it lacks. Name a preset the rig carries: `production` serves each
 episode from one of the plan's endpoints.
 
-`submissions.resolve` takes the same plan and answers with `resolved` and any prepaid `credit_quote`. It files nothing,
-spends no quota and returns no submission id. A plan with a `transaction_key` draws from that key,
+`submissions.resolve` takes the same plan and answers with `resolved` alone. For a prepaid
+organization, that `ResolvedPlan` carries a `credit_quote`. It files nothing, spends no quota and
+returns no submission id. A plan with a `transaction_key` draws from that key,
 so a dry run shows the draws a submission under the same key then makes. Without a key, the draws
 are an example. From Python, `PlatformClient.resolve_plan` makes the call.
 
