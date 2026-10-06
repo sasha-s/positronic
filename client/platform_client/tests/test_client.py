@@ -25,6 +25,7 @@ from platform_client.enums import (
     OnExhausted,
     QuotaSubject,
     ReasonCode,
+    RigShape,
     SubmissionStatus,
     Wire,
 )
@@ -309,6 +310,7 @@ def test_create_submission_sends_a_registry_password_the_platform_can_use(tmp_pa
 @pytest.mark.parametrize('prepaid', [False, True])
 def test_resolve_plan_posts_the_plan_and_reads_the_resolved_plan_back(prepaid):
     resolved = {
+        'rig_shape': 'franka',
         'episodes_total': 2,
         'tasks': [
             {
@@ -353,6 +355,7 @@ def test_resolve_plan_posts_the_plan_and_reads_the_resolved_plan_back(prepaid):
     response = make_client(gateway).resolve_plan(plan)
 
     assert isinstance(response, ResolvedPlan) and response.episodes_total == 2
+    assert response.rig_shape is RigShape.franka
     if prepaid:
         assert response.credit_quote is not None and response.credit_quote.total_units == 4
     else:

@@ -34,6 +34,7 @@ from platform_client.enums import (
     Placement,
     QuotaSubject,
     ReasonCode,
+    RigShape,
     StartPose,
     SubmissionStatus,
     Wire,
@@ -219,7 +220,7 @@ RESOLVED_TASK = ResolvedTask(
     clutter_objects=['cup', 'sponge'],
     episode_order=['pi05', 'baseline', 'baseline'],
 )
-RESOLVED = ResolvedPlan(episodes_total=3, tasks=[RESOLVED_TASK])
+RESOLVED = ResolvedPlan(rig_shape=RigShape.franka, episodes_total=3, tasks=[RESOLVED_TASK])
 
 MODELS: list[BaseModel] = [
     Scores(),
@@ -889,7 +890,27 @@ def test_a_resolved_endpoint_names_a_wire():
 def test_the_resolved_total_is_the_sum_over_the_tasks():
     assert RESOLVED.tasks[0].episodes == 3
     with pytest.raises(ValidationError, match='episodes_total states 4'):
-        ResolvedPlan(episodes_total=4, tasks=[RESOLVED_TASK])
+        ResolvedPlan(rig_shape=RigShape.franka, episodes_total=4, tasks=[RESOLVED_TASK])
+
+
+@pytest.mark.parametrize('shape', [shape for shape in RigShape if shape is not RigShape.INVALID])
+def test_a_resolved_plan_carries_its_rig_shape_as_a_slug(shape: RigShape):
+    plan = ResolvedPlan(episodes_total=3, tasks=[RESOLVED_TASK], rig_shape=shape)
+
+    assert plan.rig_shape is shape
+    assert plan.model_dump(mode='json')['rig_shape'] == slug_of(shape)
+    assert ResolvedPlan.model_validate_json(plan.model_dump_json()) == plan
+
+
+def test_a_resolved_plan_refuses_an_absent_rig_shape():
+    with pytest.raises(ValidationError, match='rig_shape'):
+        ResolvedPlan.model_validate({'episodes_total': 3, 'tasks': [RESOLVED_TASK.model_dump(mode='json')]})
+
+
+@pytest.mark.parametrize('shape', ['unknown', 'invalid', 1, RigShape.INVALID])
+def test_a_resolved_plan_refuses_an_invalid_rig_shape(shape: object):
+    with pytest.raises(ValidationError, match='rig_shape'):
+        ResolvedPlan.model_validate({**RESOLVED.model_dump(mode='json'), 'rig_shape': shape})
 
 
 def test_a_plan_outcome_totals_its_endpoints():

@@ -21,6 +21,7 @@ from platform_client.enums import (
     Placement,
     QuotaSubject,
     ReasonCode,
+    RigShape,
     StartPose,
     SubmissionStatus,
     Wire,
@@ -245,6 +246,7 @@ class ResolvedPlan(BaseModel):
 
     episodes_total: int = Field(ge=1)
     tasks: list[ResolvedTask] = Field(min_length=1)
+    rig_shape: Slugged[RigShape]
     credit_quote: CreditQuote | None = None
 
     @model_validator(mode='after')
